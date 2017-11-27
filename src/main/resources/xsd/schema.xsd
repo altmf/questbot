@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="Windows-1251"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="p03:bot" xmlns:tns="p03:bot">
+	<xsd:complexType name="Adress">
+		<xsd:sequence>
+		  <xsd:element name="Index" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="Country" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="Region" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="District" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="City" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="Locality" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="House" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="Korpus" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="Build" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="Apartment" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="AddressNonStructured" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="Schedule">
+		<xsd:sequence>
+		  <xsd:element name="DayOfWeek" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="BeginTime" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="EndTime" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="BeginDinner" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="EndDinner" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="Type" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="ScheduleList">
+      <xsd:sequence>
+        <xsd:element name="Schedule" type="tns:Schedule" maxOccurs="unbounded" minOccurs="0"/>
+      </xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="Organisation">
+		<xsd:sequence>
+		  <xsd:element name="FullName" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="Name" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="Code" minOccurs="0" maxOccurs="1" type="xsd:integer"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="ScheduleInfo">
+		<xsd:sequence>
+		  <xsd:element name="Organisation" minOccurs="0" maxOccurs="1" type="tns:Organisation"/>
+		  <xsd:element name="ScheduleList" minOccurs="0" maxOccurs="1" type="tns:ScheduleList"/>
+		  <xsd:element name="Adress" minOccurs="0" maxOccurs="1" type="tns:Adress"/>
+		  <xsd:element name="Phone" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="ScheduleInfoList">
+      <xsd:sequence>
+        <xsd:element name="ScheduleInfo" type="tns:ScheduleInfo" maxOccurs="unbounded" minOccurs="0"/>
+      </xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="DataList">
+      <xsd:sequence>
+        <xsd:element name="ScheduleInfoList" type="tns:ScheduleInfoList" maxOccurs="1" minOccurs="0"/>
+      </xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="Param">
+		<xsd:sequence>
+		  <xsd:element name="Name" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="Value" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="ParamList">
+      <xsd:sequence>
+        <xsd:element name="Param" type="tns:Param" maxOccurs="unbounded" minOccurs="0"/>
+      </xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="Action">
+		<xsd:sequence>
+		  <xsd:element name="Name" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="Depart" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="Value" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="Command" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="InfoMessage">
+		<xsd:sequence>
+		  <xsd:element name="Name" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="Code" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		  <xsd:element name="Message" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="InfoMessageList">
+      <xsd:sequence>
+        <xsd:element name="InfoMessage" type="tns:InfoMessage" maxOccurs="unbounded" minOccurs="0"/>
+      </xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:element name="Action" type="tns:Action"/>
+	<xsd:element name="DataList" type="tns:DataList"/>
+	<xsd:element name="InfoMessageList" type="tns:InfoMessageList"/>
+	
+</xsd:schema>

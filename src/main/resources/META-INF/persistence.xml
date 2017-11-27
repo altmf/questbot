@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+  <persistence-unit name="QUE" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>ru.p03.questbot.model.ClsAnswer</class>
+    <class>ru.p03.questbot.model.ClsQuest</class>
+    <class>ru.p03.questbot.model.ClsQuestPhoto</class>
+    <class>ru.p03.questbot.model.RegQuestAnswer</class>
+    <class>ru.p03.questbot.model.VwRegLastQuestAnswer</class>
+
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="jdbc:h2:E:\test\bea\bea"/>
+      <property name="javax.persistence.jdbc.user" value="LOCAL_ADMIN"/>
+      <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
+      <property name="javax.persistence.jdbc.password" value="123"/>
+    </properties>
+  </persistence-unit>
+</persistence>
