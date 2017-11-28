@@ -24,6 +24,7 @@ import ru.p03.questbot.bot.document.spi.DocumentMarshalerAggregator;
 import ru.p03.questbot.bot.document.spi.DocumentMarshaller;
 import ru.p03.questbot.bot.document.spi.JsonDocumentMarshallerImpl;
 import ru.p03.questbot.bot.schema.Action;
+import ru.p03.questbot.bot.state.QuestStateHolder;
 import ru.p03.questbot.bot.state.StateHolder;
 import ru.p03.questbot.model.ClsDocType;
 import ru.p03.questbot.model.repository.ClassifierRepository;
@@ -53,23 +54,21 @@ public class AppEnv {
 
     private MenuManager menuManager;
     private StateHolder stateHolder;
+    private QuestStateHolder questStateHolder;
 
     private AppEnv() {
 
     }
 
     private void initMarschaller() {
-//        DocumentMarshaller mrsh = new CustomDocumentMarshallerImpl(InfoMessageList.class, ClsDocType.SERVICE_INFO);
         DocumentMarshaller mrsh2 = new JsonDocumentMarshallerImpl(Action.class, ClsDocType.ACTION);
-//        DocumentMarshaller mrsh3 = new CustomDocumentMarshallerImpl(InfoMessageList.class, ClsDocType.EMPLOYEE_LIST);
-////        DocumentMarshaller mrsh4 = new CustomDocumentMarshallerImpl(Man.class, ClsDocType.MAN);
         marshalFactory.setMarshallers(Arrays.asList(mrsh2));//, mrsh3, mrsh4));
         marshalFactory.init();
     }
 
     private void initManagers() {
-
-        menuManager = new MenuManager(classifierRepository, marshalFactory, stateHolder);
+        questStateHolder =  new QuestStateHolder();
+        menuManager = new MenuManager(classifierRepository, marshalFactory, stateHolder, questStateHolder);
 
     }
 
@@ -187,5 +186,12 @@ public class AppEnv {
             }
         }
         return null;
+    }
+
+    /**
+     * @return the questStateHolder
+     */
+    public QuestStateHolder getQuestStateHolder() {
+        return questStateHolder;
     }
 }

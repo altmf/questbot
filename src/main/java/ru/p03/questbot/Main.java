@@ -52,6 +52,7 @@ public class Main {
 
             try {
                 botsApi.registerBot(bot);
+                AppEnv.getContext().getMenuManager().setBot(bot);
             } catch (TelegramApiRequestException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
