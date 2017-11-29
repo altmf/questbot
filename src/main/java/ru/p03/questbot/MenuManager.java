@@ -8,6 +8,7 @@ package ru.p03.questbot;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,9 +18,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.api.methods.send.SendSticker;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
 import ru.p03.questbot.Bot;
 import ru.p03.questbot.bot.state.StateHolder;
 import ru.p03.questbot.bot.document.spi.DocumentMarshalerAggregator;
@@ -33,6 +36,7 @@ import ru.p03.questbot.model.repository.ClassifierRepository;
 import ru.p03.questbot.model.repository.ClassifierRepositoryImpl;
 import ru.p03.questbot.util.ActionBuilder;
 import ru.p03.questbot.util.InlineKeyboardButtonBuilder;
+import ru.p03.questbot.util.UpdateUtil;
 
 /**
  *
@@ -71,9 +75,10 @@ public class MenuManager {
 
     private void initQuests(Update update) {
         List<ClsQuest> q = classifierRepository.find(ClsQuest.class, false);
-        Set s = new HashSet(q);
-        List<ClsQuest> quests = new ArrayList<>(s);
-        questStateHolder.put(update, new QuestEnumeration(quests));
+//        Set s = new HashSet(q);
+//        List<ClsQuest> quests = new ArrayList<>(s);
+        Collections.shuffle(q);
+        questStateHolder.put(update, new QuestEnumeration(q));
     }
 
     public SendMessage processCommand(Update update) {
@@ -94,98 +99,86 @@ public class MenuManager {
         return answerMessage;
     }
 
+    private void sendQuest(Update update) throws TelegramApiException {
+        QuestEnumeration qe = questStateHolder.get(update);
+        Long chatId = UpdateUtil.getChatFromUpdate(update).getId();
+        ClsQuest nextQuest = qe.nextElement();
+        if (nextQuest != null) {
+            SendMessage quest = new SendMessage();
+            quest.setParseMode("HTML");
+            quest.setText("<b>Вопрос " + qe.getCurrentQuest() + ":</b>  "
+                    + nextQuest.getQuestText());
+            quest.setChatId(chatId);
+            bot.execute(quest);
+            for (ClsQuestPhoto clsQuestPhoto : nextQuest.getClsQuestPhotoCollection()) {
+                SendPhoto sendPhoto = new SendPhoto();
+                sendPhoto.setChatId(chatId);
+                sendPhoto.setNewPhoto(new File(AppEnv.getContext().getRootPath()
+                        + "\\photo" + clsQuestPhoto.getRelFilePath()));
+                bot.sendPhoto(sendPhoto);
+            }
+
+            SendMessage answers = new SendMessage();
+            answers.setParseMode("HTML");
+            answers.setText("<b>Варианты ответа:</b>");
+            answers.setChatId(chatId);
+            answers.setReplyMarkup(keyboardAnswer(update, nextQuest));
+            bot.execute(answers);
+        }else{
+            SendMessage answers = new SendMessage();
+            answers.setParseMode("HTML");
+            answers.setText("<b>Ну вот и все! Подробности на процедуре награждения</b> \n "
+                    + "Если хочешь начать сначала нажми кнопку 'Начать' или введи /start");
+            answers.setChatId(chatId);
+            InlineKeyboardMarkup markup = keyboard(update);
+            answers.setReplyMarkup(markup);
+            bot.execute(answers);
+            
+            SendSticker sticker = new SendSticker();
+            sticker.setChatId(chatId);
+            
+            File stikerFile = new File(AppEnv.getContext().getRootPath() + "\\photo\\stiker.png");
+            if (stikerFile.exists()){
+                sticker.setNewSticker(stikerFile);
+                bot.sendSticker(sticker);
+            }
+            
+            
+        }
+    }
+
     public List<SendMessage> processCallbackQuery(Update update) {
         List<SendMessage> answerMessages = new ArrayList<>();
         try {
             Action action = new ActionBuilder(marshalFactory).buld(update);
             String data = update.getCallbackQuery().getData();
-            Long chatId = update.getCallbackQuery().getMessage().getChatId();
+            Long chatId = UpdateUtil.getChatFromUpdate(update).getId();//update.getCallbackQuery().getMessage().getChatId();
             if (data == null || action == null) {
                 return null;
             }
 
             if (MenuManager.OPEN_MAIN.equals(action.getName())) {
                 initQuests(update);
-                QuestEnumeration qe = questStateHolder.get(update);
-                ClsQuest nextQuest = qe.nextElement();
-                if (nextQuest != null) {
-                    SendMessage quest = new SendMessage();
-                    quest.setParseMode("HTML");
-                    quest.setText( "<b>Вопрос " + qe.getCurrentQuest() + ":</b>  " +
-                            nextQuest.getQuestText());
-                    quest.setChatId(chatId);
-                    bot.execute(quest);
-                    for (ClsQuestPhoto clsQuestPhoto : nextQuest.getClsQuestPhotoCollection()) {
-                        SendPhoto sendPhoto = new SendPhoto();
-                        sendPhoto.setChatId(chatId);
-                        sendPhoto.setNewPhoto(new File(AppEnv.getContext().getRootPath() 
-                                + "\\photo" + clsQuestPhoto.getRelFilePath()));
-                        bot.sendPhoto(sendPhoto);
-                    }
 
-                    SendMessage answers = new SendMessage();
-                    answers.setParseMode("HTML");
-                    answers.setText("<b>Варианты ответа:</b>");
-                    answers.setChatId(chatId);
-                    answers.setReplyMarkup(keyboardAnswer(update, nextQuest));
-                    bot.execute(answers);
-                }
-
-                //SendMessage answerMessage = new SendMessage();
+                sendQuest(update);
             }
 
-//
-//            }
-//            if (MenuManager.OPEN_MY_APPOINT_ORDER_LIST.equals(action.getName())) {
-//                answerMessage = new SendMessage();
-//                String text = "";
-//                ClsEmployee finded = classifierRepository.findEmployee(UpdateUtil.getUserFromUpdate(update).getId());
-//                if (finded != null) {
-//                    List<RegSchedule> list = regScheduleRepository.findFromEmployee(finded, new Date());
-//                    if (!list.isEmpty()) {
-//                        text = "Ко мне записаны:\n";
-//                        int i = 1;
-//                        for (RegSchedule rs : list) {
-//                            ClsCustomer customer = classifierRepository.find(ClsCustomer.class, rs.getIdCustomer());
-//                            ClsService service = classifierRepository.find(ClsService.class, rs.getIdService());
-//                            String s = i + ". на " + FormatUtils.formatAsDDMMYYYHHmm(rs.getDateTimeServiceBegin())
-//                                    + " к " + customer.getFamiliaIO() + " на " + service.getName() + "\n";
-//                            text += s;
-//                            i++;
-//                        }
-//                    }
-//                }
-//                if (text.isEmpty()) {
-//                    text = "К вам никто не записан";
-//
-//                }
-//                answerMessage.setText(text);
-//            }
-//            if (MenuManager.OPEN_ALL_APPOINT_ORDER_LIST.equals(action.getName())) {
-//                answerMessage = new SendMessage();
-//                String text = "";
-//                List<ClsEmployee> finded = classifierRepository.find(ClsEmployee.class, false);
-//                for (ClsEmployee employee : finded) {
-//                    List<RegSchedule> list = regScheduleRepository.findFromEmployee(employee, new Date());
-//                    if (!list.isEmpty()) {
-//                        text = "К " + employee.getFamiliaIO() + " записаны:\n";
-//                        int i = 1;
-//                        for (RegSchedule rs : list) {
-//                            ClsCustomer customer = classifierRepository.find(ClsCustomer.class, rs.getIdCustomer());
-//                            ClsService service = classifierRepository.find(ClsService.class, rs.getIdService());
-//                            String s = i + ". " + customer.getFamiliaIO() + " на " + FormatUtils.formatAsDDMMYYYHHmm(rs.getDateTimeServiceBegin())
-//                                    + " на " + service.getName() + "\n";
-//                            text += s;
-//                            i++;
-//                        }
-//                    }
-//                }
-//                if (text.isEmpty()) {
-//                    text = "Записей к мастерам нет";
-//
-//                }
-//                answerMessage.setText(text);
-//            }
+            if (MenuManager.GET_ANSWER.equals(action.getName())) {
+                Long answId = Long.parseLong(action.getValue());
+                ClsAnswer answ = classifierRepository.find(ClsAnswer.class, answId);
+                SendMessage comment = new SendMessage();
+                comment.setParseMode("HTML");
+                comment.setText("<b>Твой ответ:</b> "
+                        + answ.getAnswerText()
+                        + "\n<b>Комментарий к ответу:</b> "
+                        + answ.getAnswerComment()
+                        + "\n");
+                comment.setChatId(chatId);
+                bot.execute(comment);
+                
+                sendQuest(update);
+            }
+
         } catch (Exception ex) {
             Logger.getLogger(MenuManager.class.getName()).log(Level.SEVERE, null, ex);
             answerMessages.add(errorMessage());
