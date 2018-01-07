@@ -53,25 +53,14 @@ public class AppEnv {
 
     private ClassifierRepository classifierRepository = new ClassifierRepositoryImpl();
 
-
-    //private MenuManager menuManager;
-    //private StateHolder stateHolder;
     private QuestStateHolder questStateHolder;
 
     private AppEnv() {
 
     }
 
-//    private void initMarschaller() {
-//        DocumentMarshaller mrsh2 = new JsonDocumentMarshallerImpl(Action.class, ClsDocType.ACTION);
-//        marshaller.setMarshallers(Arrays.asList(mrsh2));//, mrsh3, mrsh4));
-//        marshaller.init();
-//    }
-
     private void initManagers() {
         questStateHolder =  new QuestStateHolder();
-        //menuManager = new MenuManager(classifierRepository, marshaller, questStateHolder);
-
     }
 
     private Properties initProperties(String propFileName) {
@@ -123,10 +112,6 @@ public class AppEnv {
         return classifierRepository;
     }
 
-//    public MenuManager getMenuManager() {
-//        return menuManager;
-//    }
-//
     public DocumentMarshaller getMarschaller() {
         return marshaller;
     }
@@ -134,7 +119,6 @@ public class AppEnv {
 
     public void init(String propFileName) {
         initProperties(propFileName);
-        //initMarschaller();
         initManagers();
     }
 
@@ -150,9 +134,6 @@ public class AppEnv {
 
         ((ClassifierRepositoryImpl) getClassifierRepository()).setDAO(dao);
 
-        //stateHolder = new StateHolder();
-
-        //initMarschaller();
         initManagers();
     }
 
@@ -189,9 +170,6 @@ public class AppEnv {
         return null;
     }
 
-    /**
-     * @return the questStateHolder
-     */
     public QuestStateHolder getQuestStateHolder() {
         return questStateHolder;
     }
