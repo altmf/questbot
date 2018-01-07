@@ -5,8 +5,6 @@
  */
 package ru.p03.questbot.bot.state;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.telegram.telegrambots.api.objects.Update;

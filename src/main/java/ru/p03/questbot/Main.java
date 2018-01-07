@@ -40,32 +40,39 @@ public class Main {
 
         Runnable r = () -> {
             Bot bot = null;
-            HttpHost proxy = AppEnv.getContext().getProxyIfAbsetnt();
+            HttpHost proxy = AppEnv.getContext().getProxy();
             if (proxy == null) {
                 bot = new Bot();
             } else {
-                DefaultBotOptions instance = ApiContext.getInstance(DefaultBotOptions.class);
-                RequestConfig rc = RequestConfig.custom().setProxy(proxy).build();
+                DefaultBotOptions instance = ApiContext
+                        .getInstance(DefaultBotOptions.class);
+                RequestConfig rc = RequestConfig.custom()
+                        .setProxy(proxy).build();
                 instance.setRequestConfig(rc);
                 bot = new Bot(instance);
             }
 
             try {
                 botsApi.registerBot(bot);
-                AppEnv.getContext().getMenuManager().setBot(bot);
+                bot.setClassifierRepository(AppEnv.getContext().getClassifierRepository());
+                bot.setMarshaller(AppEnv.getContext().getMarschaller());
+                bot.setQuestStateHolder(AppEnv.getContext().getQuestStateHolder());
+                //AppEnv.getContext().getMenuManager().setBot(bot);
             } catch (TelegramApiRequestException ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Main.class.getName())
+                        .log(Level.SEVERE, null, ex);
             }
         };
 
-        r.run();
+        new Thread(r).start();//r.run();
 
         while (true) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "bot!");
             try {
                 Thread.sleep(80000L);
             } catch (InterruptedException ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Main.class.getName())
+                        .log(Level.SEVERE, null, ex);
             }
         }
 

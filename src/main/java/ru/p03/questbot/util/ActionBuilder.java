@@ -7,8 +7,7 @@ package ru.p03.questbot.util;
 
 import org.telegram.telegrambots.api.objects.Update;
 import ru.p03.questbot.bot.schema.Action;
-import ru.p03.questbot.bot.document.spi.DocumentMarshalerAggregator;
-import ru.p03.questbot.model.ClsDocType;
+import ru.p03.questbot.bot.document.spi.DocumentMarshaller;
 
 /**
  *
@@ -16,11 +15,11 @@ import ru.p03.questbot.model.ClsDocType;
  */
 public class ActionBuilder {
 
-    private final DocumentMarshalerAggregator marshalFactory;
+    private final DocumentMarshaller marshaller;
     private Action action = new Action();
 
-    public ActionBuilder(DocumentMarshalerAggregator marshalFactory) {
-        this.marshalFactory = marshalFactory;
+    public ActionBuilder(DocumentMarshaller marshaller) {
+        this.marshaller = marshaller;
     }
 
     public ActionBuilder setName(String name) {
@@ -34,7 +33,7 @@ public class ActionBuilder {
     }
 
     public String asString() {
-        return marshalFactory.<Action>marshal(action, ClsDocType.ACTION);
+        return marshaller.<Action>marshal(action);
     }
 
     public Action buld() {
@@ -47,7 +46,7 @@ public class ActionBuilder {
             return null;
         }
 
-        action = marshalFactory.<Action>unmarshal(data, ClsDocType.ACTION);
+        action = marshaller.<Action>unmarshal(data);
 
         if (action == null) {
             return null;

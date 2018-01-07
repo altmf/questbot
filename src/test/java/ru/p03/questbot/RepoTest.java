@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 import ru.p03.questbot.AppEnv;
 import ru.p03.questbot.model.ClsAnswer;
 import ru.p03.questbot.model.ClsQuest;
@@ -50,6 +51,7 @@ public class RepoTest {
     // TODO add test methods here.
     // The methods must be annotated with annotation @Test. For example:
     //
+    @Ignore
     @Test
     public void testClsQuest() {
         ClsQuest find = AppEnv.getContext().getClassifierRepository().find(ClsQuest.class, 1L);
@@ -63,12 +65,14 @@ public class RepoTest {
                 .forEach(System.out::println);
     }
     
+    @Ignore
     @Test
     public void testAnswer() {
         ClsAnswer find = AppEnv.getContext().getClassifierRepository().find(ClsAnswer.class, 1L);
         log.log(Level.SEVERE, "ANSWER = " + find.getAnswerText());
     }
     
+    @Ignore
     @Test
     public void testPhoto() {
         ClsQuestPhoto find = AppEnv.getContext().getClassifierRepository().find(ClsQuestPhoto.class, 1L);

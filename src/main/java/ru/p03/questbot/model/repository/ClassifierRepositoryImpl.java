@@ -7,7 +7,6 @@
 package ru.p03.questbot.model.repository;
 
 import java.util.List;
-import static javafx.scene.input.KeyCode.T;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import ru.p03.classifier.model.Classifier;

@@ -30,8 +30,6 @@ import ru.p03.classifier.model.Classifier;
 @Entity
 @Table(name = "CLS_QUEST", catalog = "QUEB", schema = "QUE")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "ClsQuest.findAll", query = "SELECT c FROM ClsQuest c")})
 public class ClsQuest extends Classifier implements Serializable {
 
     private static final long serialVersionUID = 1L;

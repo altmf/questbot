@@ -3,14 +3,9 @@ package ru.p03.questbot.bot.document.spi;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import ru.p03.common.util.JaxbUtil;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.helpers.DefaultValidationEventHandler;
-import javax.xml.bind.util.ValidationEventCollector;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -91,17 +86,6 @@ public class JsonDocumentMarshallerImpl implements DocumentMarshaller {
         }
         return s;
     }
-
-//    private Unmarshaller createUnmarshaller() {
-//        try {
-//            Unmarshaller unmarshaller = getContext().createUnmarshaller();
-//            unmarshaller.setEventHandler(new ValidationEventCollector());
-//            return unmarshaller;
-//        } catch (JAXBException e) {
-//            log.log(Level.SEVERE, "Unable to Create UnMarshaller.", e);
-//        }
-//        return null;
-//    }
 
     public JAXBContext getContext() {
         return context;

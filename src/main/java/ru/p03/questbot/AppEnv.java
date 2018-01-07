@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -20,12 +19,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.http.HttpHost;
 import ru.p03.common.util.QueriesEngine;
-import ru.p03.questbot.bot.document.spi.DocumentMarshalerAggregator;
 import ru.p03.questbot.bot.document.spi.DocumentMarshaller;
 import ru.p03.questbot.bot.document.spi.JsonDocumentMarshallerImpl;
 import ru.p03.questbot.bot.schema.Action;
 import ru.p03.questbot.bot.state.QuestStateHolder;
-import ru.p03.questbot.bot.state.StateHolder;
 import ru.p03.questbot.model.ClsDocType;
 import ru.p03.questbot.model.repository.ClassifierRepository;
 import ru.p03.questbot.model.repository.ClassifierRepositoryImpl;
@@ -43,32 +40,37 @@ public class AppEnv {
     public static String SERVICE_FILE = "SERVICE_FILE";
     public static String EMPLOYEE_FILE = "EMPLOYEE_FILE";
 
+    //    PROPERTIES:
+    //    ROOT_PATH=absolute path
+    //    PROXY_USE=false
+    //    TOKEN=bot token
+    //    USERNAME=bot user name
     private Map environments = new HashMap();
 
     private static AppEnv CONTEXT;
 
-    private DocumentMarshalerAggregator marshalFactory = new DocumentMarshalerAggregator();
+    private DocumentMarshaller marshaller = new JsonDocumentMarshallerImpl(Action.class, ClsDocType.ACTION);
 
     private ClassifierRepository classifierRepository = new ClassifierRepositoryImpl();
 
 
-    private MenuManager menuManager;
-    private StateHolder stateHolder;
+    //private MenuManager menuManager;
+    //private StateHolder stateHolder;
     private QuestStateHolder questStateHolder;
 
     private AppEnv() {
 
     }
 
-    private void initMarschaller() {
-        DocumentMarshaller mrsh2 = new JsonDocumentMarshallerImpl(Action.class, ClsDocType.ACTION);
-        marshalFactory.setMarshallers(Arrays.asList(mrsh2));//, mrsh3, mrsh4));
-        marshalFactory.init();
-    }
+//    private void initMarschaller() {
+//        DocumentMarshaller mrsh2 = new JsonDocumentMarshallerImpl(Action.class, ClsDocType.ACTION);
+//        marshaller.setMarshallers(Arrays.asList(mrsh2));//, mrsh3, mrsh4));
+//        marshaller.init();
+//    }
 
     private void initManagers() {
         questStateHolder =  new QuestStateHolder();
-        menuManager = new MenuManager(classifierRepository, marshalFactory, stateHolder, questStateHolder);
+        //menuManager = new MenuManager(classifierRepository, marshaller, questStateHolder);
 
     }
 
@@ -106,6 +108,8 @@ public class AppEnv {
                     Logger.getLogger(AppEnv.class.getName()).log(Level.SEVERE, entry.getKey() + " = " + entry.getValue());
                 }
                 environments.putAll(properties);
+                Bot.TOKEN = properties.getProperty("TOKEN");
+                Bot.USERNAME = properties.getProperty("USERNAME");
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(AppEnv.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
@@ -119,21 +123,18 @@ public class AppEnv {
         return classifierRepository;
     }
 
-    public MenuManager getMenuManager() {
-        return menuManager;
-    }
+//    public MenuManager getMenuManager() {
+//        return menuManager;
+//    }
 //
-    public DocumentMarshalerAggregator getMarschaller() {
-        return marshalFactory;
+    public DocumentMarshaller getMarschaller() {
+        return marshaller;
     }
-//
-    public StateHolder getStateHolder() {
-        return stateHolder;
-    }
+
 
     public void init(String propFileName) {
         initProperties(propFileName);
-        initMarschaller();
+        //initMarschaller();
         initManagers();
     }
 
@@ -149,9 +150,9 @@ public class AppEnv {
 
         ((ClassifierRepositoryImpl) getClassifierRepository()).setDAO(dao);
 
-        stateHolder = new StateHolder();
+        //stateHolder = new StateHolder();
 
-        initMarschaller();
+        //initMarschaller();
         initManagers();
     }
 
@@ -175,7 +176,7 @@ public class AppEnv {
         return (String) environments.get(ROOT_PATH);
     }
 
-    public HttpHost getProxyIfAbsetnt() {
+    public HttpHost getProxy() {
         if (environments.get(PROXY_HOST) != null && environments.get(PROXY_PORT) != null
                 && environments.get(PROXY_USE) != null && "true".equalsIgnoreCase((String) environments.get(PROXY_USE))) {
             try {
